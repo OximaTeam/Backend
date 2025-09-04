@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id        String   @id @default(uuid())
+  username  String
+  password  String
+  email     String
+  createdAt DateTime @default(now())
+
+  folders   Folders[]
+  notes     Notes[]
+}
+
+model Folders {
+  id       String   @id @default(uuid())
+  name     String
+  parentId String?  
+  ownerId  String
+
+  owner    Users    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  parent   Folders? @relation("FolderToFolder", fields: [parentId], references: [id], onDelete: Cascade)
+  children Folders[] @relation("FolderToFolder")
+
+  notes    Notes[]
+}
+
+model Notes {
+  id        String   @id @default(uuid())
+  ownerId   String
+  parentId  String?
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  owner     Users    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  parent    Folders? @relation(fields: [parentId], references: [id], onDelete: Cascade)
+  blocks    Blocks[]
+}
+
+model Blocks {
+  id        String    @id @default(uuid())
+  noteId    String
+  type      BlockType
+  content   String
+  processed Boolean
+
+  note      Notes     @relation(fields: [noteId], references: [id], onDelete: Cascade)
+}
+
+enum BlockType {
+  paragraph
+  heading1
+  heading2
+  heading3
+  heading4
+  heading5
+  unorderedList
+  orderedList
+  checkedList
+  callout
+  quote
+  table
+  separator
+  image
+  video
+  audio
+  file
+  code
+  math
+}
