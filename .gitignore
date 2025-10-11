@@ -2,3 +2,8 @@ node_modules/
 .git
 
 /generated/prisma
+/.vscode
+/coverage
+/src/common/test
+/test
+/dist
