@@ -25,3 +25,19 @@ services:
       timeout: 5s
       retries: 5
       start_period: 5s
+
+  backend:
+    container_name: backend
+    build:
+      dockerfile: Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+    ports:
+      - "${BACK_PORT}:${BACK_PORT}"
+    working_dir: /app
+    networks:
+      - postgres-net
+    restart: unless-stopped
