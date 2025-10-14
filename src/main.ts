@@ -27,7 +27,12 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
 
-  app.use(helmet());
+  app.use((req, res, next) => {
+    if (req.path.startsWith("/api/docs")) {
+      return helmet({ contentSecurityPolicy: false })(req, res, next);
+    }
+    helmet()(req, res, next);
+  });
 
   app.setGlobalPrefix("api");
 
