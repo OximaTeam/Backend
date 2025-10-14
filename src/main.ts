@@ -32,7 +32,7 @@ async function bootstrap() {
   app.setGlobalPrefix("api");
 
   app.use(
-    "/docs",
+    "/api/docs",
     apiReference({
       content: document,
       theme: "default",
