@@ -34,6 +34,8 @@ async function bootstrap() {
     helmet()(req, res, next);
   });
 
+  app.setGlobalPrefix("api");
+
   app.use(
     "/api/docs",
     apiReference({
@@ -45,7 +47,10 @@ async function bootstrap() {
   app.useGlobalFilters(new ApiResponseFilter());
   app.useGlobalInterceptors(new SuccessInterceptor());
 
-  await app.listen(process.env.BACK_PORT ?? 4040);
+  await app.listen(
+    process.env.BACK_PORT ?? 4040,
+    process.env.IP_TYPE ?? "127.0.0.1"
+  );
 }
 
 bootstrap();
