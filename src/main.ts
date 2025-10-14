@@ -9,6 +9,15 @@ import { apiReference } from "@scalar/nestjs-api-reference";
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.use((req, res, next) => {
+    if (req.path.startsWith("/api/docs")) {
+      return next();
+    }
+    helmet()(req, res, next);
+  });
+
+  app.setGlobalPrefix("api");
+
   const config = new DocumentBuilder()
     .setTitle("API")
     .setDescription("Api of the Oxima's backend")
@@ -26,15 +35,6 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-
-  app.use((req, res, next) => {
-    if (req.path.startsWith("/api/docs")) {
-      return next();
-    }
-    helmet()(req, res, next);
-  });
-
-  app.setGlobalPrefix("api");
 
   app.use(
     "/api/docs",
