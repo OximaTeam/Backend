@@ -88,9 +88,4 @@ export class UsersController {
     const user = await this.checkPass.check(req.user.email, body.password);
     return await this.serviceUsers.editUserPwd(user.id, body.newPassword);
   }
-
-  @Get("check")
-  async checkDeploy() {
-    return "ok";
-  }
 }
