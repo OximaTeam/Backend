@@ -36,7 +36,7 @@ services:
     env_file:
       - .env
     ports:
-      - "${BACK_PORT}:${BACK_PORT}"
+      - "127.0.0.1:${BACK_PORT}:${BACK_PORT}"
     working_dir: /app
     networks:
       - postgres-net

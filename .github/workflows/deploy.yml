@@ -21,7 +21,6 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd oxima/Backend
-            docker compose stop
             git checkout prod
             git pull origin prod
             echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env
