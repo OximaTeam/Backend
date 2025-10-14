@@ -29,7 +29,7 @@ async function bootstrap() {
 
   app.use((req, res, next) => {
     if (req.path.startsWith("/api/docs")) {
-      return helmet({ contentSecurityPolicy: false })(req, res, next);
+      return next();
     }
     helmet()(req, res, next);
   });
