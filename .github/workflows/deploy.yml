@@ -30,5 +30,4 @@ jobs:
             echo "POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}" >> .env
             echo "BACK_PORT=${{ secrets.BACK_PORT }}" >> .env
             echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
-            echo "IP_TYPE=${{ secrets.IP_TYPE }}" >> .env
             docker compose up -d --build
