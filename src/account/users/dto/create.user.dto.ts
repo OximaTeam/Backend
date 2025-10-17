@@ -6,7 +6,7 @@ export const CreateUserSchema = UserSchema.pick({
   username: true,
   email: true,
   password: true,
-});
+}).strict();
 
 const ResponseCreateUserSwag = z.object({
   user: UserSchema.omit({ createdAt: true, password: true }).extend({

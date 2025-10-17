@@ -57,7 +57,6 @@ export class UsersController {
     return this.serviceUsers.getUser(req.user.id);
   }
 
-  @ApiBody({ type: DeleteUserDto })
   @Delete("delete")
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ZodValidationPipe(DeleteUserSchema))

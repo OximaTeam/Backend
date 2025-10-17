@@ -67,27 +67,27 @@ export class UsersCrud {
   }
 
   async editUserInfo(id: string, body: EditUserInfoDto) {
-    const user = await this.prisma.users.update({
-      where: { id: id },
-      data: body,
-      select: {
-        id: true,
-        username: true,
-        email: true,
-        createdAt: true,
-      },
-    });
+    try {
+      const user = await this.prisma.users.update({
+        where: { id: id },
+        data: body,
+        select: {
+          id: true,
+          username: true,
+          email: true,
+          createdAt: true,
+        },
+      });
 
-    const accessToken = await this.jwt.login(user);
+      const accessToken = await this.jwt.login(user);
 
-    if (!user) {
+      return {
+        user: { ...user },
+        accessToken: accessToken.accessToken,
+      };
+    } catch (e) {
       throw new UnauthorizedException("User doesn't exist!");
     }
-
-    return {
-      user: { ...user },
-      accessToken: accessToken.accessToken,
-    };
   }
 
   async editUserPwd(id: string, pwd: string) {

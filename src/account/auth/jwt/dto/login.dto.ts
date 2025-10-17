@@ -2,7 +2,10 @@ import { createZodDto } from "nestjs-zod";
 import { UserSchema } from "src/common/types/users.type";
 import { z } from "zod";
 
-export const LoginSchema = UserSchema.pick({ email: true, password: true });
+export const LoginSchema = UserSchema.pick({
+  email: true,
+  password: true,
+}).strict();
 
 const ResponseJwtSchema = z.object({
   accessToken: z.jwt(),

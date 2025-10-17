@@ -19,7 +19,7 @@ model Users {
 }
 
 model Folders {
-  id       String   @id @default(uuid())
+  id       String   @id @default(uuid()) @unique
   name     String
   parentId String?  
   ownerId  String
@@ -32,10 +32,11 @@ model Folders {
 }
 
 model Notes {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid()) @unique
   ownerId   String
   parentId  String?
   name      String
+  blocksList String[] @default([])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -45,11 +46,11 @@ model Notes {
 }
 
 model Blocks {
-  id        String    @id @default(uuid())
+  id        String    @id @default(uuid()) @unique
   noteId    String
   type      BlockType
-  content   String
-  processed Boolean
+  content   Json?
+  processed Boolean @default(false)
 
   note      Notes     @relation(fields: [noteId], references: [id], onDelete: Cascade)
 }

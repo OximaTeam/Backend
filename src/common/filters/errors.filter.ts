@@ -26,9 +26,9 @@ export class ApiResponseFilter implements ExceptionFilter {
       statusCode = exception.getStatus();
       const res = exception.getResponse();
       body = {
-        ...body,
         status: "error",
         message: typeof res === "string" ? res : (res as any).message,
+        code: statusCode,
       };
     } else if (exception instanceof ZodError) {
       const errors: Record<string, string> = {};
