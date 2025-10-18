@@ -15,8 +15,6 @@ services:
       - .env
     volumes:
       - postgres-vol:/var/lib/postgresql/data
-    ports:
-      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     networks:
       - postgres-net
     healthcheck:
