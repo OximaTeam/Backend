@@ -4,6 +4,7 @@ import z from "zod";
 
 export const GetContBlocksSchema = BlockSchema.pick({})
   .extend({
+    noteId: z.uuid(),
     id: z.uuid().array(),
   })
   .strict();

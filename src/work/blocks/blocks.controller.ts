@@ -5,6 +5,7 @@ import {
   Get,
   Patch,
   Post,
+  Req,
   UseGuards,
   UsePipes,
 } from "@nestjs/common";
@@ -31,29 +32,33 @@ export class BlocksController {
   @ApiOkResponse({ type: BlockDto })
   @Post("create")
   @UsePipes(new ZodValidationPipe(CreateBlockSchema))
-  async createBlock(@Body() body: CreateBlockDto): Promise<BlockDto> {
-    return await this.blocksService.createBlock(body);
+  async createBlock(
+    @Req() req,
+    @Body() body: CreateBlockDto
+  ): Promise<BlockDto> {
+    return await this.blocksService.createBlock(req.user.id, body);
   }
 
   @ApiOkResponse({ type: ResponseGetContBlocksDto })
   @Get("get")
   @UsePipes(new ZodValidationPipe(GetContBlocksSchema))
   async getBlocks(
+    @Req() req,
     @Body() body: GetContBlocksDto
   ): Promise<ResponseGetContBlocksDto> {
-    return await this.blocksService.getBlocks(body);
+    return await this.blocksService.getBlocks(req.user.id, body);
   }
 
   @ApiOkResponse({ type: BlockDto })
   @Patch("edit")
   @UsePipes(new ZodValidationPipe(EditBlockSchema))
-  async editBlock(@Body() body: EditBlockDto): Promise<BlockDto> {
-    return await this.blocksService.editBlock(body);
+  async editBlock(@Req() req, @Body() body: EditBlockDto): Promise<BlockDto> {
+    return await this.blocksService.editBlock(req.user.id, body);
   }
 
   @Delete("delete")
   @UsePipes(new ZodValidationPipe(DeleteBlockSchema))
-  async deleteBlock(@Body() body: DeleteBlockDto) {
-    return await this.blocksService.deleteBlock(body);
+  async deleteBlock(@Req() req, @Body() body: DeleteBlockDto) {
+    return await this.blocksService.deleteBlock(req.user.id, body);
   }
 }

@@ -4,9 +4,3 @@ import { NoteSchema } from "src/common/types/notes.type";
 export const GetBlocksSchema = NoteSchema.pick({ id: true }).strict();
 
 export class GetBlocksDto extends createZodDto(GetBlocksSchema) {}
-
-export class ResponseGetBlocksDto extends createZodDto(
-  NoteSchema.pick({
-    blocksList: true,
-  })
-) {}

@@ -4,6 +4,7 @@ import { APP_GUARD } from "@nestjs/core";
 import { AccountModule } from "./account/account.module";
 import { PrismaModule } from "prisma/prisma.module";
 import { WorkModule } from "./work/work.module";
+import { MltoolsModule } from './mltools/mltools.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { WorkModule } from "./work/work.module";
         limit: 10,
       },
     ]),
+    MltoolsModule,
   ],
   controllers: [],
   providers: [

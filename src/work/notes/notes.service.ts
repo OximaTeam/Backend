@@ -16,22 +16,19 @@ export class NotesService {
     });
   }
 
-  async getBlocks(ownerId: string, id: string) {
-    const list = await this.prisma.notes.findUnique({
+  async getNote(ownerId: string, id: string) {
+    const note = await this.prisma.notes.findUnique({
       where: {
         id: id,
         ownerId: ownerId,
       },
-      select: {
-        blocksList: true,
-      },
     });
 
-    if (!list) {
+    if (!note) {
       throw new NotFoundException("Note doesn't exist!");
     }
 
-    return list;
+    return note;
   }
 
   async deleteNote(ownerId: string, id: string) {

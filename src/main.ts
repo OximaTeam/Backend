@@ -22,6 +22,15 @@ async function bootstrap() {
     .setTitle("API")
     .setDescription("Api of the Oxima's backend")
     .setVersion("1.0")
+    .addApiKey(
+      {
+        type: "apiKey",
+        name: "x-api-key",
+        in: "header",
+        description: "for ml",
+      },
+      "x-api-key"
+    )
     .addBearerAuth(
       {
         type: "http",

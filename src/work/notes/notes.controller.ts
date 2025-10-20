@@ -19,11 +19,7 @@ import {
 } from "./dto/create.note.dto";
 import { ZodValidationPipe } from "src/common/pipes/ZodPipe";
 import { NoteDto } from "src/common/types/notes.type";
-import {
-  GetBlocksDto,
-  GetBlocksSchema,
-  ResponseGetBlocksDto,
-} from "./dto/getblocks.note.dto";
+import { GetBlocksDto, GetBlocksSchema } from "./dto/get.note.dto";
 import { DeleteNoteDto, DeleteNoteSchema } from "./dto/delete.note";
 import { EditNoteDto, EditNoteSchema } from "./dto/patch.note.dto";
 
@@ -40,14 +36,11 @@ export class NotesController {
     return await this.noteService.createNote(req.user.id, body);
   }
 
-  @ApiOkResponse({ type: ResponseGetBlocksDto })
+  @ApiOkResponse({ type: ResponseCreateNotesSwagDto })
   @Get("blocks")
   @UsePipes(new ZodValidationPipe(GetBlocksSchema))
-  async getBlocks(
-    @Req() req,
-    @Body() body: GetBlocksDto
-  ): Promise<ResponseGetBlocksDto> {
-    return await this.noteService.getBlocks(req.user.id, body.id);
+  async getNote(@Req() req, @Body() body: GetBlocksDto): Promise<NoteDto> {
+    return await this.noteService.getNote(req.user.id, body.id);
   }
 
   @Delete("delete")
