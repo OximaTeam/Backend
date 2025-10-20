@@ -43,7 +43,7 @@ export class ApiResponseFilter implements ExceptionFilter {
       body = {
         status: "validation_error",
         code: statusCode,
-        errors,
+        message: errors,
       };
     } else if (exception instanceof Error) {
       body = { status: "error", message: exception.message, code: statusCode };
