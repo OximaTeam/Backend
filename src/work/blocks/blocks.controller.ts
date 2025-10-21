@@ -3,13 +3,14 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Patch,
   Post,
   Req,
   UseGuards,
   UsePipes,
 } from "@nestjs/common";
-import { ApiBearerAuth, ApiOkResponse } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiExtraModels, ApiOkResponse } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/account/auth/jwt/jwt.guard";
 import { BlocksService } from "./blocks.service";
 import { BlockDto } from "src/common/types/blocks.type";
@@ -22,14 +23,16 @@ import {
 } from "./dto/get.block.dto";
 import { EditBlockDto, EditBlockSchema } from "./dto/patch.block.dto";
 import { DeleteBlockDto, DeleteBlockSchema } from "./dto/delete.block.dto";
+import { ApiOkCust } from "src/common/decorators/formatapi.decorator";
 
+@ApiExtraModels(BlockDto)
 @ApiBearerAuth("jwt")
 @Controller("work/blocks")
 @UseGuards(JwtAuthGuard)
 export class BlocksController {
   constructor(private blocksService: BlocksService) {}
 
-  @ApiOkResponse({ type: BlockDto })
+  @ApiOkCust(BlockDto)
   @Post("create")
   @UsePipes(new ZodValidationPipe(CreateBlockSchema))
   async createBlock(
@@ -39,8 +42,9 @@ export class BlocksController {
     return await this.blocksService.createBlock(req.user.id, body);
   }
 
-  @ApiOkResponse({ type: ResponseGetContBlocksDto })
-  @Get("get")
+  @ApiOkCust(BlockDto, true)
+  @HttpCode(200)
+  @Post("get")
   @UsePipes(new ZodValidationPipe(GetContBlocksSchema))
   async getBlocks(
     @Req() req,
@@ -49,13 +53,21 @@ export class BlocksController {
     return await this.blocksService.getBlocks(req.user.id, body);
   }
 
-  @ApiOkResponse({ type: BlockDto })
+  @ApiOkCust(BlockDto)
   @Patch("edit")
   @UsePipes(new ZodValidationPipe(EditBlockSchema))
   async editBlock(@Req() req, @Body() body: EditBlockDto): Promise<BlockDto> {
     return await this.blocksService.editBlock(req.user.id, body);
   }
 
+  @ApiOkResponse({
+    schema: {
+      type: "object",
+      properties: {
+        status: { type: "string", example: "success" },
+      },
+    },
+  })
   @Delete("delete")
   @UsePipes(new ZodValidationPipe(DeleteBlockSchema))
   async deleteBlock(@Req() req, @Body() body: DeleteBlockDto) {

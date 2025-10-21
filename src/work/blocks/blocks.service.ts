@@ -15,10 +15,14 @@ export class BlocksService {
 
   async createBlock(ownerId: string, body: CreateBlockDto) {
     const owner = await this.prisma.notes.findUnique({
-      where: { id: body.noteId },
-      select: { ownerId: true },
+      where: {
+        id: body.noteId,
+      },
     });
-    if (!owner || owner.ownerId != ownerId) {
+    if (!owner) {
+      throw new ForbiddenException("Note doesn't exist!");
+    }
+    if (owner.ownerId != ownerId) {
       throw new ForbiddenException("Not enough rights!");
     }
     return await this.prisma.blocks.create({ data: body });
@@ -26,10 +30,16 @@ export class BlocksService {
 
   async deleteBlock(ownerId: string, body: DeleteBlockDto) {
     const owner = await this.prisma.notes.findUnique({
-      where: { id: body.noteId },
-      select: { ownerId: true },
+      where: {
+        id: body.noteId,
+      },
     });
-    if (!owner || owner.ownerId != ownerId) {
+
+    if (!owner) {
+      throw new ForbiddenException("Note doesn't exist!");
+    }
+
+    if (owner.ownerId != ownerId) {
       throw new ForbiddenException("Not enough rights!");
     }
 
@@ -47,29 +57,40 @@ export class BlocksService {
       where: {
         id: body.noteId,
       },
-      select: {
-        ownerId: true,
-      },
     });
 
-    if (!owner || owner.ownerId != ownerId) {
+    if (!owner) {
+      throw new NotFoundException("Note doesn't exist!");
+    }
+
+    if (owner.ownerId != ownerId) {
       throw new ForbiddenException("Not enough rights!");
     }
 
-    return await this.prisma.blocks.findMany({
+    const blocks = await this.prisma.blocks.findMany({
       where: {
         id: { in: body.id },
-        noteId: body.noteId,
       },
     });
+
+    const blocksMap = new Map(blocks.map((b) => [b.id, b]));
+
+    return body.id
+      .map((id) => blocksMap.get(id))
+      .filter((block) => block !== undefined);
   }
 
   async editBlock(ownerId: string, body: EditBlockDto) {
     const owner = await this.prisma.notes.findUnique({
-      where: { id: body.noteId },
-      select: { ownerId: true },
+      where: {
+        id: body.noteId,
+      },
     });
-    if (!owner || owner.ownerId != ownerId) {
+    if (!owner) {
+      throw new NotFoundException("Not enough rights!");
+    }
+
+    if (owner.ownerId != ownerId) {
       throw new ForbiddenException("Not enough rights!");
     }
     try {

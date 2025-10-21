@@ -17,7 +17,7 @@ import {
   ResponseCreateUserDto,
 } from "./dto/create.user.dto";
 import { UsersCrud } from "./users.service";
-import { ApiBearerAuth, ApiBody, ApiOkResponse } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiExtraModels, ApiOkResponse } from "@nestjs/swagger";
 import { ResponseGetUserDto, ResponseGetUserSwagDto } from "./dto/get.user.dto";
 import { JwtAuthGuard } from "../auth/jwt/jwt.guard";
 import { DeleteUserDto, DeleteUserSchema } from "./dto/delete.user.dto";
@@ -32,7 +32,14 @@ import {
   ResponseEditUserPwdDto,
   ResponseEditUserPwdSwagDto,
 } from "./dto/patch.user.dto";
+import { ApiOkCust } from "src/common/decorators/formatapi.decorator";
 
+@ApiExtraModels(
+  ResponseCreateUserSwagDto,
+  ResponseGetUserSwagDto,
+  ResponseEditUserInfoSwagDto,
+  ResponseEditUserPwdSwagDto
+)
 @Controller("user")
 export class UsersController {
   constructor(
@@ -40,7 +47,7 @@ export class UsersController {
     private checkPass: CheckPassword
   ) {}
 
-  @ApiOkResponse({ type: ResponseCreateUserSwagDto.Output })
+  @ApiOkCust(ResponseCreateUserSwagDto)
   @Post("create")
   @UsePipes(new ZodValidationPipe(CreateUserSchema))
   async createUser(
@@ -50,13 +57,21 @@ export class UsersController {
   }
 
   @ApiBearerAuth("jwt")
-  @ApiOkResponse({ type: ResponseGetUserSwagDto.Output })
+  @ApiOkCust(ResponseGetUserSwagDto)
   @Get("info")
   @UseGuards(JwtAuthGuard)
   async getInfoUser(@Req() req): Promise<ResponseGetUserDto> {
     return this.serviceUsers.getUser(req.user.id);
   }
 
+  @ApiOkResponse({
+    schema: {
+      type: "object",
+      properties: {
+        status: { type: "string", example: "success" },
+      },
+    },
+  })
   @Delete("delete")
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ZodValidationPipe(DeleteUserSchema))
@@ -65,7 +80,7 @@ export class UsersController {
     return await this.serviceUsers.deleteUser(user.id);
   }
 
-  @ApiOkResponse({ type: ResponseEditUserInfoSwagDto.Output })
+  @ApiOkCust(ResponseEditUserInfoSwagDto)
   @Patch("info")
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ZodValidationPipe(EditUserInfoSchema))
@@ -76,7 +91,7 @@ export class UsersController {
     return await this.serviceUsers.editUserInfo(req.user.id, body);
   }
 
-  @ApiOkResponse({ type: ResponseEditUserPwdSwagDto.Output })
+  @ApiOkCust(ResponseEditUserPwdSwagDto)
   @Patch("pwd")
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ZodValidationPipe(EditUserPwdSchema))

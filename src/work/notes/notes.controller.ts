@@ -9,7 +9,7 @@ import {
   UseGuards,
   UsePipes,
 } from "@nestjs/common";
-import { ApiBearerAuth, ApiOkResponse } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiExtraModels, ApiOkResponse } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/account/auth/jwt/jwt.guard";
 import { NotesService } from "./notes.service";
 import {
@@ -22,37 +22,63 @@ import { NoteDto } from "src/common/types/notes.type";
 import { GetBlocksDto, GetBlocksSchema } from "./dto/get.note.dto";
 import { DeleteNoteDto, DeleteNoteSchema } from "./dto/delete.note";
 import { EditNoteDto, EditNoteSchema } from "./dto/patch.note.dto";
+import {
+  BodyNoteDto,
+  BodyNoteSchema,
+  ResponseBodyNoteDto,
+} from "./dto/getbody.note.dto";
+import { ApiOkCust } from "src/common/decorators/formatapi.decorator";
+import { BlockDto } from "src/common/types/blocks.type";
 
 @ApiBearerAuth("jwt")
+@ApiExtraModels(ResponseCreateNotesSwagDto, ResponseBodyNoteDto)
 @Controller("work/notes")
 @UseGuards(JwtAuthGuard)
 export class NotesController {
   constructor(private noteService: NotesService) {}
 
-  @ApiOkResponse({ type: ResponseCreateNotesSwagDto })
+  @ApiOkCust(ResponseCreateNotesSwagDto)
   @Post("create")
   @UsePipes(new ZodValidationPipe(CreateNoteSchema))
   async createNote(@Req() req, @Body() body: CreateNotesDto): Promise<NoteDto> {
     return await this.noteService.createNote(req.user.id, body);
   }
 
-  @ApiOkResponse({ type: ResponseCreateNotesSwagDto })
+  @ApiOkCust(ResponseCreateNotesSwagDto)
   @Get("blocks")
   @UsePipes(new ZodValidationPipe(GetBlocksSchema))
   async getNote(@Req() req, @Body() body: GetBlocksDto): Promise<NoteDto> {
     return await this.noteService.getNote(req.user.id, body.id);
   }
 
+  @ApiOkResponse({
+    schema: {
+      type: "object",
+      properties: {
+        status: { type: "string", example: "success" },
+      },
+    },
+  })
   @Delete("delete")
   @UsePipes(new ZodValidationPipe(DeleteNoteSchema))
   async deleteNote(@Req() req, @Body() body: DeleteNoteDto) {
     return await this.noteService.deleteNote(req.user.id, body.id);
   }
 
-  @ApiOkResponse({ type: ResponseCreateNotesSwagDto })
+  @ApiOkCust(ResponseCreateNotesSwagDto)
   @Patch("edit")
   @UsePipes(new ZodValidationPipe(EditNoteSchema))
   async editNote(@Req() req, @Body() body: EditNoteDto): Promise<NoteDto> {
     return await this.noteService.editNote(req.user.id, body);
+  }
+
+  @ApiOkCust(BlockDto, true)
+  @Post("body")
+  @UsePipes(new ZodValidationPipe(BodyNoteSchema))
+  async getBody(
+    @Req() req,
+    @Body() body: BodyNoteDto
+  ): Promise<ResponseBodyNoteDto> {
+    return await this.noteService.getBody(req.user.id, body);
   }
 }

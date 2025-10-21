@@ -5,9 +5,13 @@ import { ApiResponseFilter } from "./common/filters/errors.filter";
 import { SuccessInterceptor } from "./common/interceptors/response.interseptor";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { apiReference } from "@scalar/nestjs-api-reference";
+import { success } from "zod";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.useGlobalFilters(new ApiResponseFilter());
+  app.useGlobalInterceptors(new SuccessInterceptor());
 
   app.use((req, res, next) => {
     if (req.path.startsWith("/api/docs")) {
@@ -52,9 +56,6 @@ async function bootstrap() {
       theme: "default",
     })
   );
-
-  app.useGlobalFilters(new ApiResponseFilter());
-  app.useGlobalInterceptors(new SuccessInterceptor());
 
   await app.listen(process.env.BACK_PORT ?? 4040);
 }

@@ -1,8 +1,7 @@
-import { Module } from '@nestjs/common';
-import { NearblocksModule } from './nearblocks/nearblocks.module';
-import { WordblocksModule } from './wordblocks/wordblocks.module';
+import { Module } from "@nestjs/common";
+import { ContextModule } from "./context/context.module";
 
 @Module({
-  imports: [NearblocksModule, WordblocksModule]
+  imports: [ContextModule],
 })
 export class MltoolsModule {}

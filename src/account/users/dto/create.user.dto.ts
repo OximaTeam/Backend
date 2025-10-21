@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { createZodDto } from "nestjs-zod";
 import { UserSchema } from "src/common/types/users.type";
+import { ApiExtraModels } from "@nestjs/swagger";
 
 export const CreateUserSchema = UserSchema.pick({
   username: true,
