@@ -3,13 +3,19 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   Patch,
   Post,
   Req,
   UseGuards,
   UsePipes,
 } from "@nestjs/common";
-import { ApiBearerAuth, ApiExtraModels, ApiOkResponse } from "@nestjs/swagger";
+import {
+  ApiBearerAuth,
+  ApiExtraModels,
+  ApiOkResponse,
+  ApiParam,
+} from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/account/auth/jwt/jwt.guard";
 import { NotesService } from "./notes.service";
 import {
@@ -29,6 +35,7 @@ import {
 } from "./dto/getbody.note.dto";
 import { ApiOkCust } from "src/common/decorators/formatapi.decorator";
 import { BlockDto } from "src/common/types/blocks.type";
+import { uuid } from "zod";
 
 @ApiBearerAuth("jwt")
 @ApiExtraModels(ResponseCreateNotesSwagDto, ResponseBodyNoteDto)
@@ -45,10 +52,13 @@ export class NotesController {
   }
 
   @ApiOkCust(ResponseCreateNotesSwagDto)
-  @Get("blocks")
-  @UsePipes(new ZodValidationPipe(GetBlocksSchema))
-  async getNote(@Req() req, @Body() body: GetBlocksDto): Promise<NoteDto> {
-    return await this.noteService.getNote(req.user.id, body.id);
+  @ApiParam({ name: "id", type: uuid })
+  @Get("info/:id")
+  async getNote(
+    @Req() req,
+    @Param(new ZodValidationPipe(GetBlocksSchema)) param: GetBlocksDto
+  ): Promise<NoteDto> {
+    return await this.noteService.getNote(req.user.id, param.id);
   }
 
   @ApiOkResponse({
