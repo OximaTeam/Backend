@@ -13,16 +13,6 @@ export class NotesService {
   constructor(private prisma: PrismaService) {}
 
   async createNote(ownerId: string, body: CreateNotesDto) {
-    if (body.parentId) {
-      const parentFolder = await this.prisma.folders.findUnique({
-        where: {
-          id: body.parentId,
-        },
-      });
-      if (!parentFolder) {
-        throw new NotFoundException("Parent folder doesn't exist!");
-      }
-    }
     return await this.prisma.notes.create({
       data: {
         ...body,

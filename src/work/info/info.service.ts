@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "prisma/prisma.service";
+import { WorkTreeDtoSwag } from "./dto/get.tree.dto";
 
 @Injectable()
 export class InfoService {
@@ -7,67 +8,42 @@ export class InfoService {
 
   async getWorkTree(ownerId: string) {
     const folders = await this.prisma.folders.findMany({
-      where: { ownerId: ownerId },
+      where: { ownerId },
       select: { id: true, name: true, parentId: true },
       orderBy: { name: "asc" },
     });
 
     const notes = await this.prisma.notes.findMany({
-      where: { ownerId: ownerId },
+      where: { ownerId },
       select: { id: true, name: true, parentId: true },
       orderBy: { name: "asc" },
     });
 
-    const byParent: Record<
-      string | number,
-      { id: string; name: string; type: "folder" | "note" }[]
-    > = {};
+    const nodes: Record<string, WorkTreeDtoSwag> = {};
+    const parentMap = new Map<string, string | null>();
 
-    for (const folder of folders) {
-      const parent = folder.parentId ?? 0;
-      if (!byParent[parent]) byParent[parent] = [];
-      byParent[parent].push({
-        id: folder.id,
-        name: folder.name,
-        type: "folder",
-      });
+    for (const f of folders) {
+      nodes[f.id] = { id: f.id, name: f.name, type: "folder", children: [] };
+      parentMap.set(f.id, f.parentId);
     }
 
-    for (const note of notes) {
-      const parent = note.parentId ?? 0;
-      if (!byParent[parent]) byParent[parent] = [];
-      byParent[parent].push({
-        id: note.id,
-        name: note.name,
-        type: "note",
-      });
+    for (const n of notes) {
+      nodes[n.id] = { id: n.id, name: n.name, type: "note" };
+      parentMap.set(n.id, n.parentId);
     }
 
-    function buildTree(parentId: string | number) {
-      const children = byParent[parentId] || [];
+    const roots: WorkTreeDtoSwag[] = [];
 
-      children.sort((a, b) =>
-        a.name.localeCompare(b.name, ["en", "ru"], { sensitivity: "base" })
-      );
-
-      return children.map((item) => {
-        if (item.type === "folder") {
-          return {
-            id: item.id,
-            name: item.name,
-            type: "folder",
-            children: buildTree(item.id),
-          };
-        } else {
-          return {
-            id: item.id,
-            name: item.name,
-            type: "note",
-          };
-        }
-      });
+    for (const node of Object.values(nodes)) {
+      const parentId = parentMap.get(node.id);
+      if (parentId) {
+        const parent = nodes[parentId];
+        parent.children.push(node);
+      } else {
+        roots.push(node);
+      }
     }
 
-    return buildTree(0);
+    return roots;
   }
 }

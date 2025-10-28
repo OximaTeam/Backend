@@ -8,16 +8,6 @@ export class FoldersService {
   constructor(private prisma: PrismaService) {}
 
   async createFolder(ownerId: string, body: CreateFolderDto) {
-    if (body.parentId) {
-      const parentFolder = await this.prisma.folders.findUnique({
-        where: {
-          id: body.parentId,
-        },
-      });
-      if (!parentFolder) {
-        throw new NotFoundException("Parent folder doesn't exist!");
-      }
-    }
     return await this.prisma.folders.create({
       data: {
         ...body,
