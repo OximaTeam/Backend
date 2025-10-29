@@ -60,10 +60,6 @@ export class ContextService {
       throw new NotFoundException("Note doesn't exist!");
     }
 
-    if (!note.blocksList.includes(body.id)) {
-      throw new NotFoundException("Block's not in this note!");
-    }
-
     const blocks = await this.prisma.$queryRaw<any[]>`
       SELECT *
       FROM "Blocks"
