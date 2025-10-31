@@ -11,7 +11,7 @@ export class MlGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const apiKey = request.headers["x-api-key"];
 
-    if (apiKey !== process.env.INTERNAL_API_KEY) {
+    if (!apiKey || apiKey !== process.env.INTERNAL_API_KEY) {
       throw new UnauthorizedException("Invalid internal key");
     }
 

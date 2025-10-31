@@ -25,4 +25,4 @@ COPY --from=builder /app/prisma ./prisma
 
 EXPOSE ${BACK_PORT}
 
-CMD ["sh", "-c", "npx prisma migrate deploy && npm run seed:prod && npm run start:prod"]
+CMD ["sh", "-c", "npx prisma migrate deploy && npx prisma generate && npm run seed:prod && npm run start:prod"]

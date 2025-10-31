@@ -12,10 +12,14 @@ model Users {
   username  String
   password  String
   email     String   @unique
+  defaultApiId String? @unique
   createdAt DateTime @default(now())
 
+  defaultApi Api? @relation("defaultApi",fields: [defaultApiId], references: [id], onDelete: SetNull)
+  
   folders   Folders[]
   notes     Notes[]
+  apis Api[] @relation("apis")
 }
 
 model Folders {
@@ -75,4 +79,22 @@ enum BlockType {
   file
   code
   math
+}
+
+model Api {
+  id         String    @id @default(uuid()) @unique
+  ownerId    String
+  provider   ProviderType
+  providerUrl String?
+  modelId    String
+  apiKey     String
+
+  defaultUser Users? @relation("defaultApi")
+  owner     Users    @relation("apis",fields: [ownerId], references: [id], onDelete: Cascade)
+}
+
+enum ProviderType {
+  custom
+  mistral
+  openai
 }

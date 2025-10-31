@@ -13,6 +13,7 @@ export const UserSchema = z.object({
     .string()
     .min(5, "Too short password!")
     .max(20, "Too long password!"),
+  defaultApiId: z.uuid().optional().nullable(),
 });
 
 export class UserDto extends createZodDto(UserSchema) {}

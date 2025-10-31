@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   UnauthorizedException,
 } from "@nestjs/common";
 import { PrismaService } from "prisma/prisma.service";
@@ -34,6 +35,7 @@ export class UsersCrud {
         username: true,
         email: true,
         createdAt: true,
+        defaultApiId: true,
       },
     });
     const userJwt = await this.jwt.login(addUser);
@@ -53,6 +55,7 @@ export class UsersCrud {
         email: true,
         username: true,
         createdAt: true,
+        defaultApiId: true,
       },
     });
     if (!user) {
@@ -76,8 +79,13 @@ export class UsersCrud {
           username: true,
           email: true,
           createdAt: true,
+          defaultApiId: true,
         },
       });
+
+      if (!user) {
+        throw new UnauthorizedException("User doesn't exist!");
+      }
 
       const accessToken = await this.jwt.login(user);
 
@@ -86,7 +94,11 @@ export class UsersCrud {
         accessToken: accessToken.accessToken,
       };
     } catch (e) {
-      throw new UnauthorizedException("User doesn't exist!");
+      if (e instanceof UnauthorizedException) {
+        throw new UnauthorizedException("User doesn't exist!");
+      } else {
+        throw new InternalServerErrorException(e);
+      }
     }
   }
 
@@ -100,6 +112,7 @@ export class UsersCrud {
         username: true,
         email: true,
         createdAt: true,
+        defaultApiId: true,
       },
     });
   }
