@@ -5,7 +5,6 @@ import { ApiResponseFilter } from "./common/filters/errors.filter";
 import { SuccessInterceptor } from "./common/interceptors/response.interseptor";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { apiReference } from "@scalar/nestjs-api-reference";
-import { success } from "zod";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -19,8 +18,6 @@ async function bootstrap() {
     }
     helmet()(req, res, next);
   });
-
-  app.setGlobalPrefix("api");
 
   const config = new DocumentBuilder()
     .setTitle("API")
