@@ -19,6 +19,8 @@ async function bootstrap() {
     helmet()(req, res, next);
   });
 
+  app.setGlobalPrefix("api");
+
   const config = new DocumentBuilder()
     .setTitle("API")
     .setDescription("Api of the Oxima's backend")
