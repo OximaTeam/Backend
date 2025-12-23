@@ -83,12 +83,12 @@ export class NotesController {
   }
 
   @ApiOkCust(BlockDto, true)
-  @Post("body")
-  @UsePipes(new ZodValidationPipe(BodyNoteSchema))
+  @ApiParam({ name: "id", type: uuid })
+  @Get("body/:id")
   async getBody(
     @Req() req,
-    @Body() body: BodyNoteDto
+    @Param(new ZodValidationPipe(BodyNoteSchema)) param: BodyNoteDto
   ): Promise<ResponseBodyNoteDto> {
-    return await this.noteService.getBody(req.user.id, body);
+    return await this.noteService.getBody(req.user.id, param);
   }
 }

@@ -44,7 +44,6 @@ export class Proccessing implements OnGatewayConnection {
   handleConnection(client: Socket) {
     client.emit("connected", {
       status: "success",
-      message: "Successfully connected to processing service",
     });
   }
 

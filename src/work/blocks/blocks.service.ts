@@ -25,7 +25,18 @@ export class BlocksService {
     if (owner.ownerId != ownerId) {
       throw new ForbiddenException("Not enough rights!");
     }
-    return await this.prisma.blocks.create({ data: body });
+    const block = await this.prisma.blocks.create({ data: body });
+
+    const noteBlockList = await this.prisma.notes.update({
+      where: {
+        id: owner.id,
+      },
+      data: {
+        blocksList: [...owner.blocksList, block.id],
+      },
+    });
+
+    return block;
   }
 
   async deleteBlock(ownerId: string, body: DeleteBlockDto) {

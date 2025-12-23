@@ -106,6 +106,7 @@ export class ProccessingService {
             id: { in: redisData.oldBlocks },
           },
         });
+
         const createdBlocks = await Promise.all(
           redisData.newBlocks.map((block) =>
             this.prisma.blocks.create({
@@ -118,6 +119,31 @@ export class ProccessingService {
             })
           )
         );
+        const blocksList = createdBlocks.map((e) => e.id);
+
+        const note = await this.prisma.notes.findUnique({
+          where: { id: redisData.noteId },
+          select: { blocksList: true },
+        });
+
+        if (!note) {
+          throw new WsException("Note not found");
+        }
+
+        const newList = await this.prisma.notes.update({
+          where: {
+            id: redisData.noteId,
+          },
+          data: {
+            blocksList: [
+              ...note.blocksList.filter(
+                (id) => !redisData.oldBlocks.includes(id)
+              ),
+              ...blocksList,
+            ],
+          },
+        });
+
         await this.redis.del(data.operationId);
 
         return {
